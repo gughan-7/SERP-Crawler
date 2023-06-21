@@ -17,7 +17,7 @@ def scrape_google_results(query, num_pages):
         }
         session = HTMLSession()
         response = session.get(url)
-        # reg = "http(s)?://(www|m).youtube.com\/((channel|c)\/)?(?!feed|user\/|watch\?)([a-zA-Z0-9-_.])*.*"
+        #regex to filter out only links that lead to a youtube channel
         reg = "^https?:\/\/(www\.)?youtube\.com\/(channel\/UC[\w-]{21}[AQgw]|(c\/|user\/)?[\w-]+)$"
         links = list(response.html.absolute_links)
         p = re.compile(reg)
@@ -29,13 +29,13 @@ def scrape_google_results(query, num_pages):
     return results
 
 query = "site:youtube.com channels"
-num_pages = 2
+num_pages = 20
 
 results = scrape_google_results(query, num_pages)
 
 print(results)
 
-
+#write info onto csv
 csv_filename = "serp.csv"
 with open(csv_filename, "w", newline="", encoding="utf-8") as csvfile:
     fieldnames = ["url"]
@@ -43,6 +43,7 @@ with open(csv_filename, "w", newline="", encoding="utf-8") as csvfile:
     writer.writeheader()
     writer.writerows(results)
 
+#write info onto json
 json_filename = "serp.json"
 with open(json_filename, "w", encoding="utf-8") as jsonfile:
     json.dump(results, jsonfile, ensure_ascii=False, indent=4)
